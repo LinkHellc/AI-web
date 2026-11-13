@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="上传手部照片和美甲款式图，生成保留原手型与细节的自然美甲效果预览，做甲前先看上手效果。" />
+  <title>美甲试甲工作台</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <span id="modelBadge" class="badge" hidden></span>
+
+  <header class="hero">
+    <h1>美甲试甲工作台</h1>
+    <p>上传手部照片与款式图后自动生成上甲效果图，后台内置约束不美化手指、保留原图细节。</p>
+  </header>
+
+  <ol class="stepper" id="stepper" aria-label="进度">
+    <li data-step="1"><span class="dot"><i>1</i></span><em>上传素材</em></li>
+    <li class="bar" aria-hidden="true"></li>
+    <li data-step="2"><span class="dot"><i>2</i></span><em>生成中</em></li>
+    <li class="bar" aria-hidden="true"></li>
+    <li data-step="3"><span class="dot"><i>3</i></span><em>完成</em></li>
+  </ol>
+
+  <main class="stage">
+    <!-- ① 上传素材 -->
+    <section id="stageUpload" aria-label="上传素材">
+      <div class="upload-grid">
+        <label class="drop" id="handDrop">
+          <input type="file" id="handInput" accept="image/*" hidden />
+          <span class="drop-title">手部照片<small>清晰露出五指与指甲</small></span>
+          <div class="drop-body">
+            <div class="drop-empty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+              <strong>点击或拖入手部照片</strong>
+              <span>手背朝上、指甲清晰、光线均匀效果最好</span>
+              <button type="button" class="sample-btn" id="sampleHandBtn">没有照片？用示例手图先体验</button>
+            </div>
+            <img class="drop-preview" alt="手部照片预览" hidden />
+            <button type="button" class="drop-clear" aria-label="移除手部照片" hidden>×</button>
+          </div>
+        </label>
+
+        <label class="drop" id="designDrop">
+          <input type="file" id="designInput" accept="image/*" hidden />
+          <span class="drop-title">美甲款式图<small>甲片、色板或上手图均可</small></span>
+          <div class="drop-body">
+            <div class="drop-empty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l4.5-4.5a2 2 0 0 1 2.8 0L16 16m-2-2 1.5-1.5a2 2 0 0 1 2.8 0L20 14M14 8h.01M6 20h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+              <strong>点击或拖入款式图</strong>
+              <span>小红书截图、店里样板、甲片照片都可以<br />也可以在下方选爆款推荐</span>
+            </div>
+            <img class="drop-preview" alt="款式图预览" hidden />
+            <div class="design-chosen" id="designChosen" hidden></div>
+            <button type="button" class="save-lib" id="saveLibBtn" hidden>☆ 收藏到我的款式库</button>
+            <button type="button" class="drop-clear" aria-label="移除款式图" hidden>×</button>
+          </div>
+        </label>
+      </div>
+
+      <section class="inspo" aria-label="款式灵感">
+        <div class="inspo-head">
+          <div class="tabs" role="tablist">
+            <button type="button" role="tab" class="tab active" data-tab="trend" aria-selected="true">🔥 2026 爆款推荐</button>
+            <button type="button" role="tab" class="tab" data-tab="mine" aria-selected="false">我的款式库 <span id="libCount"></span></button>
+          </div>
+        </div>
+        <div class="tab-panel" data-panel="trend">
+          <div class="filters" id="tagFilters" role="radiogroup" aria-label="按风格筛选"></div>
+          <div class="presets" id="presetList" role="radiogroup" aria-label="爆款推荐"></div>
+          <p class="fine">根据 2026 年小红书热门美甲关键词和时尚媒体趋势整理，点选即可试戴。</p>
+        </div>
+        <div class="tab-panel" data-panel="mine" hidden>
+          <div class="import-bar">
+            <label class="btn outline small import-files">
+              <input type="file" id="libFiles" accept="image/*" multiple hidden />
+              ＋ 导入图片（可多选）
+            </label>
+            <form class="import-url" id="importUrlForm">
+              <input type="url" id="importUrl" placeholder="粘贴图片链接（右键图片→复制图片地址）" required />
+              <button class="btn primary small" type="submit">链接导入</button>
+            </form>
+          </div>
+          <div class="presets lib-grid" id="libList" aria-label="我的款式库"></div>
+          <p class="fine" id="libEmpty">还没有自己的款式。把小红书收藏的美甲图、店里的样板照片导入进来，下次直接点选试戴。也可以把图片直接拖到这里。</p>
+        </div>
+      </section>
+
+      <details class="more" id="moreOptions">
+        <summary>更多选项：甲型、长度、质感、画质</summary>
+        <div class="more-body">
+          <label class="opt-block">
+            <span class="opt-label">补充描述</span>
+            <textarea id="extraInput" rows="2" maxlength="300" placeholder="例如：无名指加一颗小珍珠，颜色再浅一点"></textarea>
+          </label>
+          <div class="opt"><span class="opt-label">甲型</span><div class="chips" id="shapeChips"></div></div>
+          <div class="opt"><span class="opt-label">长度</span><div class="chips" id="lengthChips"></div></div>
+          <div class="opt"><span class="opt-label">质感</span><div class="chips" id="finishChips"></div></div>
+          <div class="opt"><span class="opt-label">画质</span><div class="chips" id="qualityChips"></div></div>
+          <div class="opt"><span class="opt-label">尺寸</span><div class="chips" id="sizeChips"></div></div>
+          <label class="auto-toggle"><input type="checkbox" id="autoGen" checked /> 两张图都上传后自动生成</label>
+        </div>
+      </details>
+
+      <div class="actions single">
+        <button type="button" class="btn primary" id="generateBtn" disabled>开始生成</button>
+      </div>
+      <p class="hint" id="formHint">先上传手部照片</p>
+    </section>
+
+    <!-- ② 生成中 -->
+    <section id="stageLoading" class="loading" aria-live="polite" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <h3 id="loadingTip">正在贴合美甲款式并锁定原图细节…</h3>
+      <p>快速画质一般半分钟到一分钟，请不要关闭页面</p>
+      <p class="elapsed" id="elapsed">0s</p>
+      <button type="button" class="btn outline small cancel-btn" id="cancelBtn">取消</button>
+    </section>
+
+    <!-- 出错 -->
+    <section id="stageError" class="error" aria-live="polite" hidden>
+      <h3>没有生成成功</h3>
+      <p id="errorText"></p>
+      <div class="actions">
+        <button type="button" class="btn outline" id="backBtn">返回修改</button>
+        <button type="button" class="btn primary" id="retryBtn">重试</button>
+      </div>
+    </section>
+
+    <!-- ③ 完成 -->
+    <section id="stageResult" hidden>
+      <div class="result-grid">
+        <div class="result-main">
+          <div class="compare" id="compare">
+            <img id="afterImg" alt="上甲效果图" />
+            <div class="compare-before" id="beforeWrap"><img id="beforeImg" alt="手部原图" /></div>
+            <div class="compare-handle" id="compareHandle"><span></span></div>
+            <span class="tag tag-left">原图</span>
+            <span class="tag tag-right">上甲后</span>
+            <input type="range" min="0" max="100" value="100" id="compareRange" aria-label="拖动对比上甲前后" />
+          </div>
+          <p class="compare-tip">左右拖动图片，对比上甲前后</p>
+        </div>
+        <aside class="result-side">
+          <div class="card">
+            <span class="card-title">手部原图</span>
+            <img id="sideHand" alt="手部原图" />
+          </div>
+          <div class="card" id="sideDesignCard">
+            <span class="card-title">美甲款式</span>
+            <img id="sideDesign" alt="美甲款式" />
+            <div class="side-preset" id="sidePreset" hidden></div>
+          </div>
+          <p class="note">后台内置约束：不美化手指、不磨皮美白、保留原始手型姿势与皮肤纹理。</p>
+          <p class="meta" id="resultMeta"></p>
+          <button type="button" class="btn outline small" id="hdBtn">满意这款？用精细画质重绘</button>
+        </aside>
+      </div>
+      <div class="actions triple">
+        <button type="button" class="btn outline" id="againBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5"/></svg>重新生成
+        </button>
+        <a class="btn primary" id="downloadBtn" download>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>下载效果图
+        </a>
+        <button type="button" class="btn soft" id="resetBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>重置全部
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <section class="history" aria-label="试甲记录">
+    <div class="history-head">
+      <h2>试甲记录</h2>
+      <span id="historyCount"></span>
+    </div>
+    <div class="history-grid" id="historyGrid"></div>
+    <p class="history-empty" id="historyEmpty">还没有记录，生成的效果图会自动保存在这里。</p>
+  </section>
+
+  <footer class="foot">生成效果仅供参考</footer>
+
+  <dialog id="viewer">
+    <form method="dialog" class="viewer-inner">
+      <img id="viewerImg" alt="效果图大图" />
+      <div class="viewer-thumbs" id="viewerThumbs"></div>
+      <div class="viewer-actions">
+        <a class="btn outline small" id="viewerDownload" download>下载</a>
+        <button type="button" class="btn outline small" id="viewerReuse">打开这条记录</button>
+        <button type="button" class="btn outline small danger" id="viewerDelete">删除</button>
+        <button class="btn primary small" value="close">关闭</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script src="/app.js"></script>
+</body>
+</html>

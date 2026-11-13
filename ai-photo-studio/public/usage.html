@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>用量中心</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/site.css">
+  <style>
+    .bars { display: grid; gap: 10px; }
+    .bar { display: grid; grid-template-columns: 96px 1fr 48px; gap: 10px; align-items: center; font-size: 13px; }
+    .bar i { display: block; height: 10px; border-radius: 6px; background: var(--accent); min-width: 2px; }
+    .bar em { font-style: normal; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+    .days { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; align-items: end; height: 140px; }
+    .days div { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; font-size: 10px; color: var(--muted); }
+    .days i { display: block; width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+    .days b { font-size: 11px; color: var(--ink); font-weight: 500; }
+    .acct { display: flex; gap: 16px; align-items: center; }
+    .acct .av { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font: 700 22px/1 var(--serif); background: var(--accent); color: var(--accent-ink); }
+  </style>
+</head>
+<body>
+  <header id="nav"></header>
+  <main id="main">
+    <section class="section">
+      <div class="wrap">
+        <div class="eyebrow">Usage Center / 用量中心</div>
+        <h1 class="h2">用量中心</h1>
+        <div class="card acct" style="margin:24px 0">
+          <div class="av">本</div>
+          <div><b>本机工作台</b><div class="muted" id="engine" style="font-size:14px">加载中…</div></div>
+          <a class="btn sm" href="/studio.html" style="margin-left:auto">返回工作台开始创作 →</a>
+        </div>
+        <div class="kpis" id="kpis"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap grid-2">
+        <div class="card"><div class="num">BY FEATURE</div><h3 class="h3">按功能</h3><div class="bars" id="byFeature"></div></div>
+        <div class="card"><div class="num">BY QUALITY</div><h3 class="h3">按画质</h3><div class="bars" id="byQuality"></div></div>
+        <div class="card" style="grid-column:1/-1"><div class="num">LAST 14 DAYS</div><h3 class="h3">近 14 天出图</h3><div class="days" id="days"></div></div>
+      </div>
+    </section>
+
+    <section class="section" style="border-bottom:0">
+      <div class="wrap">
+        <div class="eyebrow">Records</div>
+        <h2 class="h2">生成记录</h2>
+        <div class="card" style="overflow-x:auto">
+          <table class="table"><thead><tr><th>时间</th><th>模特</th><th>功能</th><th>画质 / 尺寸</th><th>耗时</th></tr></thead><tbody id="rows"></tbody></table>
+        </div>
+        <p class="muted" style="font-size:13px;margin-top:12px">费用以你的接口账户为准。接口返回了 token 用量时，会计入上方「接口 tokens」。</p>
+      </div>
+    </section>
+  </main>
+  <footer id="foot"></footer>
+  <script src="/common.js"></script>
+  <script>
+  'use strict';
+  renderChrome('usage');
+  function bars(el, entries) {
+    const max = Math.max(1, ...entries.map((e) => e[1]));
+    el.replaceChildren(...(entries.length ? entries.map(([k, v]) => h('div', { class: 'bar' }, h('span', {}, k), h('i', { style: `width:${(v / max) * 100}%` }), h('em', {}, v))) : [h('p', { class: 'muted' }, '暂无数据')]));
+  }
+  const feature = (r) => r.options.mode === 'angle' ? '3D 换机位' : r.options.mode === 'copy' ? 'AI 仿图' : (r.files.garments.length ? 'AI 换装' : '写真生成');
+  (async () => {
+    const [cfg, hist] = await Promise.all([api('/api/config').catch(() => null), api('/api/history').catch(() => [])]);
+    $('#engine').textContent = cfg ? (cfg.mock ? '模拟模式：未配置接口或 MOCK_MODE=1，不会产生费用' : '已连接你配置的生图接口') : '服务未启动';
+    const real = hist.filter((r) => !r.mock);
+    const secs = real.reduce((s, r) => s + r.durationMs, 0) / 1000;
+    const tokens = hist.reduce((s, r) => s + ((r.usage && r.usage.total_tokens) || 0), 0);
+    $('#kpis').replaceChildren(...[
+      ['TOTAL', hist.length, '全部作品'], ['REAL', real.length, '真实出图'],
+      ['TIME', secs ? (secs / 60).toFixed(1) + ' 分' : '0', '累计生图耗时'], ['TOKENS', tokens ? tokens.toLocaleString() : '—', '接口 tokens'],
+    ].map(([en, v, n]) => h('div', {}, h('small', {}, en), h('b', {}, String(v)), h('span', {}, n))));
+    const count = (fn) => { const m = new Map(); for (const r of hist) { const k = fn(r); m.set(k, (m.get(k) || 0) + 1); } return [...m.entries()].sort((a, b) => b[1] - a[1]); };
+    bars($('#byFeature'), count(feature));
+    const qn = Object.fromEntries((cfg ? cfg.qualities : []).map((q) => [q.id, q.name]));
+    bars($('#byQuality'), count((r) => `${qn[r.options.quality] || r.options.quality} · ${r.options.resolution}`));
+    const days = [];
+    for (let i = 13; i >= 0; i--) { const d = new Date(Date.now() - i * 864e5); days.push(d.toISOString().slice(0, 10)); }
+    const per = days.map((d) => hist.filter((r) => r.createdAt.slice(0, 10) === d).length);
+    const max = Math.max(1, ...per);
+    $('#days').replaceChildren(...days.map((d, i) => h('div', {}, per[i] ? h('b', {}, per[i]) : null, h('i', { style: `height:${(per[i] / max) * 100}%` }), d.slice(8))));
+    $('#rows').replaceChildren(...(hist.length ? hist.slice(0, 50).map((r) => h('tr', {},
+      h('td', {}, fmtDate(r.createdAt)), h('td', {}, r.personName || '—'), h('td', {}, feature(r) + (r.mock ? '（模拟）' : '')),
+      h('td', {}, `${qn[r.options.quality] || r.options.quality} · ${r.options.size}`), h('td', {}, (r.durationMs / 1000).toFixed(1) + ' 秒'))) : [h('tr', {}, h('td', { colspan: 5, class: 'muted' }, '暂无记录'))]));
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+[
+  {"file":"person-1.jpg","kind":"person","label":"条纹衬衫女性半身照","source":"https://unsplash.com/photos/smiling-woman-wearing-white-and-black-pinstriped-collared-top-QXevDflbl8A","author":"Štefan Štefančík","license":"Unsplash License","gender":"female"},
+  {"file":"person-2.jpg","kind":"person","label":"黑白高领近景人像","source":"https://unsplash.com/photos/_nbv8YREOWQ","author":"Štefan Štefančík","license":"Unsplash License","gender":"female"},
+  {"file":"garment-1.jpg","kind":"garment","label":"粗花呢外套","source":"https://www.pexels.com/photo/photo-of-an-elegant-autumn-jacket-19442406/","author":"Zayona Fashion","license":"Pexels License","gender":"female"},
+  {"file":"garment-2.jpg","kind":"garment","label":"白色抹胸连衣裙","source":"https://unsplash.com/photos/white-sweetheart-neckline-dress-pHA6KL_HpoE","author":"Alessandra Caretto","license":"Unsplash License","gender":"female"},
+  {"file":"bag-1.jpg","kind":"bag","label":"黑色绗缝链条包","source":"https://unsplash.com/photos/black-gucci-leather-shoulder-bag-ZmeFtu11Hpc","author":"James Ree","license":"Unsplash License","gender":"female"},
+  {"file":"shoes-1.jpg","kind":"shoes","label":"白色尖头高跟鞋","source":"https://unsplash.com/photos/white-leather-pointed-toe-stiletto-BI9NjChWn6s","author":"Jonathan Borba","license":"Unsplash License","gender":"female"},
+  {"file":"pose-ref-1.jpg","kind":"pose","label":"黑西装街拍全身","source":"https://unsplash.com/photos/woman-in-black-blazer-and-black-pants-standing-on-road-during-daytime-dodzmVtjoKs","author":"Nassim Boughazi","license":"Unsplash License","gender":"female"},
+  {"file":"person-m1.jpg","kind":"person","label":"深色夹克男士半身照","source":"https://unsplash.com/photos/smiling-man-in-a-dark-jacket-against-a-gray-background-VBU3WW_Japk","author":"Christoph Aigner","license":"Unsplash License","gender":"male"},
+  {"file":"person-m2.jpg","kind":"person","label":"深灰西装男士半身照","source":"https://unsplash.com/photos/man-in-a-dark-suit-jacket-and-shirt-i8tPCHU4hNY","author":"Christoph Aigner","license":"Unsplash License","gender":"male"},
+  {"file":"garment-m1.jpg","kind":"garment","label":"藏青西装外套","source":"https://unsplash.com/photos/a-suit-on-a-swinger-LkR6zTayf-o","author":"Vetrivel Viswanathar","license":"Unsplash License","gender":"male"},
+  {"file":"garment-m2.jpg","kind":"garment","label":"藏青针织衫","source":"https://unsplash.com/photos/black-sweater-on-white-clothes-hanger-NA9dtyWAFV4","author":"Caio Coelho","license":"Unsplash License","gender":"male"},
+  {"file":"bag-m1.jpg","kind":"bag","label":"棕色皮质公文包","source":"https://unsplash.com/photos/a-brown-leather-handbag-on-a-white-background-IFlg3kFbR0E","author":"personalgraphic.com","license":"Unsplash License","gender":"male"},
+  {"file":"shoes-m1.jpg","kind":"shoes","label":"棕色乐福鞋","source":"https://unsplash.com/photos/a-pair-of-brown-suede-loafers-with-gold-hardwares-KOavcW0p7oc","author":"Nelibar Shoes","license":"Unsplash License","gender":"male"},
+  {"file":"watch-m1.jpg","kind":"accessory","label":"金钢潜水腕表","source":"https://unsplash.com/photos/a-black-and-gold-rolex-watch-on-a-white-background-O703kpzIsQI","author":"DANIEL HAY","license":"Unsplash License","gender":"male"},
+  {"file":"pose-ref-m1.jpg","kind":"pose","label":"黑大衣街拍全身","source":"https://unsplash.com/photos/man-in-black-coat-standing-on-gray-pavement-_AOGyLg_o5s","author":"Mohamad Khosravi","license":"Unsplash License","gender":"male"}
+]

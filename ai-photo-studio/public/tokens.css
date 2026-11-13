@@ -1,0 +1,34 @@
+/* 全站颜色与字体变量：默认深色（对标站为近黑编辑风），🌓 切换浅色 */
+:root {
+  --bg: #0a0a0a;
+  --panel: #131313;
+  --panel-2: #1a1a1a;
+  --ink: #f3f1ec;
+  --muted: #8e8982;
+  --line: #262524;
+  --accent: #d9b77c;
+  --accent-2: #f0dcb0;
+  --accent-ink: #0a0a0a;
+  --soft: #1f1e1d;
+  --sel: rgba(217, 183, 124, .12);
+  --danger: #e0645a;
+  --radius: 16px;
+  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f5f3ef;
+  --panel: #ffffff;
+  --panel-2: #faf8f5;
+  --ink: #171615;
+  --muted: #77716a;
+  --line: #e4dfd8;
+  --accent: #9a7339;
+  --accent-2: #c29a5b;
+  --accent-ink: #ffffff;
+  --soft: #eeeae4;
+  --sel: rgba(154, 115, 57, .1);
+  --danger: #c4372b;
+  color-scheme: light;
+}

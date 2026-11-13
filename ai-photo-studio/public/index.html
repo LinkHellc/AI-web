@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>AI 写真工作台</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <header id="nav"></header>
+  <main id="main">
+    <section class="hero">
+      <div class="wrap">
+        <div>
+          <div class="badge">✨ AI 写真 · 约 30 秒一张 · 本机运行</div>
+          <h1 class="h1">一张照片，<br>拍遍万千场景。</h1>
+          <p class="lead">存下一位模特，换上任意服装，挑好拍摄模式和动作，一次出一整组写真、商拍和种草图。不用写提示词，作品只存在你自己的电脑上。</p>
+          <div class="row">
+            <a class="btn primary" href="/studio.html">进入写真工作台 →</a>
+            <a class="btn" href="/camera.html">🎬 3D 镜头工作台</a>
+            <a class="btn" href="#workflow">查看工作流程</a>
+          </div>
+        </div>
+        <div class="collage" id="collage" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <div class="stats" id="stats">
+      <div><b>12</b><span>场景风格模板</span></div>
+      <div><b>5 种</b><span>拍摄模式</span></div>
+      <div><b>45+</b><span>动作预设</span></div>
+      <div><b>~30 秒</b><span>平均出图</span></div>
+      <div><b>0</b><span>已生成作品</span></div>
+    </div>
+
+    <div class="ticker" aria-hidden="true"><div class="track" id="ticker"></div></div>
+
+    <section class="section" id="pain">
+      <div class="wrap">
+        <div class="eyebrow">01 / Pain Points</div>
+        <h2 class="h2">这些麻烦，你是不是也遇到过？</h2>
+        <p class="lead">拍一组像样的写真或商品图，难的从来不是按快门，而是人、衣服、场地和时间凑不齐。</p>
+        <div class="compare" role="table">
+          <div class="tr" role="row"><div>No.</div><div>以前</div><div>现在</div></div>
+          <div class="tr" role="row"><div>01</div><div class="before"><b>请模特又贵又慢</b>约人、租棚、修图，一组图要等好几天。</div><div class="after"><b>一张参考照，半分钟出图</b>模特存成资产，随时开拍，不用约档期。</div></div>
+          <div class="tr" role="row"><div>02</div><div class="before"><b>换一件衣服就得重拍</b>上新十款，就要重新拍十次。</div><div class="after"><b>同一个模特，一键换装</b>上传单品图，外套、连衣裙、包和鞋直接穿上身。</div></div>
+          <div class="tr" role="row"><div>03</div><div class="before"><b>每次生成都像换了个人</b>每次重新描述长相，脸越生成越不像本人。</div><div class="after"><b>脸和体型锁成资产</b>同一组照片反复作为身份参考，锁定脸部和体型。</div></div>
+          <div class="tr" role="row"><div>04</div><div class="before"><b>好看的参考图用完就丢</b>看到喜欢的构图，只能截图收藏。</div><div class="after"><b>AI 仿图，一键复刻</b>参考图的姿势、机位和光线直接套到你的模特身上。</div></div>
+          <div class="tr" role="row"><div>05</div><div class="before"><b>只能一张一张试</b>换个动作就要重新排队等。</div><div class="after"><b>动作库批量出图</b>一次勾选十几个动作，每个各出一组，失败的单张重试。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workflow">
+      <div class="wrap">
+        <div class="eyebrow">02 / Workflow</div>
+        <h2 class="h2">三步，从零到出图。</h2>
+        <div class="tabs" role="tablist" id="wfTabs"></div>
+        <div class="grid-3 steps" id="wfSteps"></div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing">
+      <div class="wrap">
+        <div class="eyebrow">03 / Pricing</div>
+        <h2 class="h2">不用充值，用你自己的接口。</h2>
+        <p class="lead">工作台直接调用你自己配置的生图接口，费用按你的接口账户实际计价。下表是各画质的速度参考。</p>
+        <div class="price">
+          <div class="card">
+            <table class="table">
+              <thead><tr><th>画质</th><th>适合</th><th>单张耗时</th></tr></thead>
+              <tbody>
+                <tr><td>快速</td><td>挑动作、试搭配</td><td>约 20–40 秒</td></tr>
+                <tr><td>标准</td><td>日常发布</td><td>约 40–80 秒</td></tr>
+                <tr><td>专业</td><td>封面、商品主图</td><td>约 60–150 秒</td></tr>
+                <tr><td>2K / 4K</td><td>大图印刷</td><td>更久，接口不支持时自动降为 1K</td></tr>
+                <tr><td>3D 镜头换角度</td><td>同一张照片换机位</td><td>同所选画质</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="num">LOCAL FIRST</div>
+            <h3 class="h3">本机运行的好处</h3>
+            <ul class="checks">
+              <li>模特照片和作品只存在你电脑的 data 文件夹</li>
+              <li>失败不扣次数，单张可随时重试</li>
+              <li>没有积分和过期时间，用量在「用量中心」随时可查</li>
+              <li>没配置接口时自动进入模拟模式，先把流程跑通</li>
+            </ul>
+            <div class="row" style="margin-top:20px"><a class="btn gold" href="/usage.html">查看用量中心</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="works">
+      <div class="wrap">
+        <div class="eyebrow">04 / Works</div>
+        <div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:24px">
+          <div><h2 class="h2" style="margin:0">每一张，都从一张照片开始。</h2></div>
+          <a class="btn sm" href="/showcase.html">查看全部成果与模特档案 →</a>
+        </div>
+        <div class="works" id="worksGrid"></div>
+      </div>
+    </section>
+
+    <section class="section cta">
+      <div class="wrap">
+        <div class="eyebrow">Get Started</div>
+        <h2 class="h2">先产出第一组内容，<br>再决定怎么长期用。</h2>
+        <p class="lead" style="margin-left:auto;margin-right:auto">内置示例模特和奢侈品单品，打开工作台点一下就能试拍。</p>
+        <div class="row"><a class="btn primary" href="/studio.html">开始创作</a><a class="btn" href="/method.html">阅读拍摄方法</a></div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="wrap faq">
+        <div class="eyebrow">05 / FAQ</div>
+        <h2 class="h2">常见问题与直接解答</h2>
+        <details open><summary>这是什么工具？</summary><p>一个在你电脑上运行的 AI 写真工作台：保存模特、给模特换装、选拍摄模式和动作，批量生成写真、商拍换装、自拍风和 AI 仿图。另有 3D 镜头页，可以把已有照片换个机位重拍。</p></details>
+        <details><summary>不会写提示词也能用吗？</summary><p>可以。流程是上传模特 → 选模式 → 选动作和风格 → 生成，提示词由工作台按你的选择自动拼好；想补充细节时再写一句「补充描述」即可。</p></details>
+        <details><summary>怎么保证每张都是同一个人？</summary><p>每次生成都会把模特的 1–4 张照片一起作为身份参考，并默认锁定脸部和体型。照片越清晰、正脸越完整，一致性越好。详见「方法」页。</p></details>
+        <details><summary>适合电商和内容号批量出图吗？</summary><p>适合。同一模特可以换多件单品，动作库一次选十几个动作，每个动作 1–4 张，成果页按模特和模式归档，方便挑图。</p></details>
+        <details><summary>费用怎么算？</summary><p>工作台本身免费，只调用你在 .env 里配置的生图接口，按接口实际计价。用量中心会统计张数、耗时和接口返回的 token 用量。</p></details>
+        <details><summary>生成失败怎么办？</summary><p>失败的那一张会显示原因（如超时、内容安全拦截、接口额度不足），点「重试」即可，不影响同批其他图片。</p></details>
+      </div>
+    </section>
+  </main>
+  <footer id="foot"></footer>
+
+  <script src="/common.js"></script>
+  <script src="/home.js"></script>
+</body>
+</html>

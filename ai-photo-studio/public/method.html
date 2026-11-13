@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>拍摄方法</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/site.css">
+  <style>
+    .read { max-width: 760px; }
+    .chapter { padding: 72px 0; border-bottom: 1px solid var(--line); }
+    .chapter p { color: var(--muted); font-size: 16px; }
+    .chapter p b { color: var(--ink); }
+    .toc { list-style: none; padding: 0; margin: 28px 0 0; counter-reset: t; }
+    .toc li { border-top: 1px solid var(--line); }
+    .toc a { display: flex; gap: 18px; padding: 14px 0; text-decoration: none; }
+    .toc a span { font: 500 12px/1.9 var(--mono); color: var(--accent); min-width: 64px; }
+    .toc a:hover { color: var(--accent); }
+    .formula { font: 600 clamp(22px, 3vw, 32px)/1.4 var(--mono); text-align: center; padding: 32px; border: 1px solid var(--line); border-radius: var(--radius); margin: 28px 0; background: var(--panel); }
+    .formula small { display: block; font: 400 13px/1.6 var(--serif); color: var(--muted); margin-top: 8px; }
+    blockquote { margin: 28px 0; padding: 4px 0 4px 20px; border-left: 3px solid var(--accent); font: 600 20px/1.6 var(--serif); }
+    .order { counter-reset: o; list-style: none; padding: 0; }
+    .order li { counter-increment: o; display: grid; grid-template-columns: 48px 1fr; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); color: var(--muted); }
+    .order li::before { content: counter(o, decimal-leading-zero); font: 500 13px/1.8 var(--mono); color: var(--accent); }
+    .order li b { color: var(--ink); display: block; }
+    .laws { display: grid; gap: 12px; margin-top: 24px; }
+    .laws .card b { font: 500 11px/1 var(--mono); letter-spacing: .16em; color: var(--accent); display: block; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <header id="nav"></header>
+  <main id="main">
+    <section class="hero" style="padding-bottom:56px">
+      <div class="wrap" style="grid-template-columns:1fr">
+        <div class="read">
+          <div class="eyebrow">Method / 拍摄方法</div>
+          <h1 class="h1">让一个人，<br>在每个场景里都是她自己。</h1>
+          <p class="lead">这一页讲清楚工作台是怎么把模特、服装、动作和镜头组合成一张照片的，以及怎样拍出更稳定的结果。</p>
+          <ol class="toc">
+            <li><a href="#c0"><span>序</span>为什么先保住脸</a></li>
+            <li><a href="#c1"><span>第一章</span>输入的顺序就是指令</a></li>
+            <li><a href="#c2"><span>第二章</span>锁定什么，放开什么</a></li>
+            <li><a href="#c3"><span>第三章</span>五种拍摄模式</a></li>
+            <li><a href="#c4"><span>第四章</span>镜头语言：方位、俯仰、距离</a></li>
+            <li><a href="#c5"><span>第五章</span>批量出图的节奏</a></li>
+            <li><a href="#c6"><span>第六章</span>十二条拍摄建议</a></li>
+            <li><a href="#c7"><span>结语</span>从一张脸开始</a></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <article class="read">
+        <section class="chapter" id="c0">
+          <div class="eyebrow">序 / The Opening</div>
+          <h2 class="h2">场景可以无限变化，人不能变。</h2>
+          <p>AI 生图最容易出的问题不是画得不好看，而是<b>画着画着就不是这个人了</b>。换了衣服、换了背景、换了姿势，脸型、五官比例和气质跟着一起漂移。</p>
+          <div class="formula">场景变化 → ∞ ， 身份漂移 → 0<small>这是整个工作台的设计目标</small></div>
+          <p>所以工作台里的每一个选项，都是围绕「先保住人，再换世界」来排的。</p>
+        </section>
+
+        <section class="chapter" id="c1">
+          <div class="eyebrow">第一章 / Input Order</div>
+          <h2 class="h2">输入的顺序，就是指令。</h2>
+          <p>每次生成，工作台会把图片按固定顺序交给生图引擎，并在提示词里说明每一张的作用：</p>
+          <ol class="order">
+            <li><span><b>模特照（1–3 张）</b>身份参考。第一张最重要，建议是清晰正脸。</span></li>
+            <li><span><b>服装单品（0–3 张）</b>上衣/连衣裙、下装、鞋包配饰，逐件还原颜色、面料、图案和五金。</span></li>
+            <li><span><b>参考图（仅 AI 仿图）</b>只借用它的姿势、构图、机位和光线，不借它的脸。</span></li>
+          </ol>
+          <p>之后才叠加拍摄模式、动作、场景风格、锁定项和镜头描述。你不用写提示词，但了解这个顺序，就知道该准备什么样的照片。</p>
+        </section>
+
+        <section class="chapter" id="c2">
+          <div class="eyebrow">第二章 / Locks</div>
+          <h2 class="h2">锁定什么，放开什么。</h2>
+          <p>「渲染配置」里有五个锁：脸部、体型、服装、环境、道具。锁上就和模特照保持一致，放开就交给本次选择。</p>
+          <div class="laws">
+            <div class="card"><b>LAW 01</b>脸部和体型默认锁上。除非你想做风格化，否则不要放开。</div>
+            <div class="card"><b>LAW 02</b>上传了服装单品时，「服装」锁自动失效，以单品图为准。</div>
+            <div class="card"><b>LAW 03</b>选了场景风格时，「环境」锁自动失效，以风格模板为准；想保留原背景请选「保持原背景」。</div>
+          </div>
+        </section>
+
+        <section class="chapter" id="c3">
+          <div class="eyebrow">第三章 / Modes</div>
+          <h2 class="h2">五种拍摄模式。</h2>
+          <p><b>对镜</b>：手机对镜自拍，镜中可见手机，最适合穿搭展示。<b>自拍</b>：前置镜头一臂距离，适合日常种草。<b>他拍</b>：朋友或摄影师帮拍，构图最自由。<b>舞蹈定格</b>：高速快门的动态瞬间，发丝和衣摆会飞起来。<b>AI 仿图</b>：上传一张参考图，照它的姿势和机位换成你的模特。</p>
+          <blockquote>仿图借的是「怎么拍」，不是「拍谁」。</blockquote>
+        </section>
+
+        <section class="chapter" id="c4">
+          <div class="eyebrow">第四章 / Camera</div>
+          <h2 class="h2">镜头语言：方位、俯仰、距离。</h2>
+          <p>工作台和 3D 镜头页都用三个数描述机位：<b>水平方位</b>（0° 正面，±90° 侧面，180° 背面）、<b>俯仰角</b>（负数仰拍显腿长，正数俯拍显脸小）、<b>距离</b>（1 米内特写，2 米半身，4 米以上全身）。</p>
+          <p>这些数字会被翻译成摄影师听得懂的话，比如「七分身、微俯、右前 45°」。生图引擎没有真正的 3D 相机，所以它是<b>方向正确的近似</b>，不是精确复现。</p>
+        </section>
+
+        <section class="chapter" id="c5">
+          <div class="eyebrow">第五章 / Batch</div>
+          <h2 class="h2">批量出图的节奏。</h2>
+          <p>打开「批量模式」可以一次选最多 12 个动作，每个动作出 1–4 张。浏览器同时跑 2 张，其余排队；某一张失败只重试那一张。</p>
+          <p>建议的节奏是：<b>先用「快速」画质挑动作和搭配，选中满意的组合，再用「专业」或 2K 出最终图</b>。</p>
+        </section>
+
+        <section class="chapter" id="c6">
+          <div class="eyebrow">第六章 / Twelve Tips</div>
+          <h2 class="h2">十二条拍摄建议。</h2>
+          <ol class="order">
+            <li><span><b>第一张模特照用正脸</b>五官完整、不戴墨镜、没有手挡脸。</span></li>
+            <li><span><b>补一张半身或全身</b>帮助 AI 理解体型和比例。</span></li>
+            <li><span><b>不要用重度美颜的照片</b>美颜过的脸会被当成「本人」，越修越假。</span></li>
+            <li><span><b>单品图越干净越好</b>平铺或挂拍、背景简单、单品占满画面。</span></li>
+            <li><span><b>一次不超过 3 件单品</b>件数越多，越容易丢细节。</span></li>
+            <li><span><b>包和鞋放第 3 格</b>前两格留给上衣和下装。</span></li>
+            <li><span><b>商品主图用白底电商</b>颜色最准，方便后期抠图。</span></li>
+            <li><span><b>特写动作配近距离镜头</b>镜头距离和动作冲突时，以镜头为准。</span></li>
+            <li><span><b>仿图选人物清晰的参考</b>多人合照会让姿势混乱。</span></li>
+            <li><span><b>先快速后精细</b>挑方向时别直接上专业画质。</span></li>
+            <li><span><b>补充描述只写一件事</b>比如「低马尾」，写多了反而互相打架。</span></li>
+            <li><span><b>尊重肖像权</b>只用本人或已获授权的人物照片。</span></li>
+          </ol>
+        </section>
+
+        <section class="chapter" id="c7" style="border-bottom:0">
+          <div class="eyebrow">结语 / Put It To Work</div>
+          <h2 class="h2">从一张脸开始，把世界交给想象。</h2>
+          <div class="row" style="margin-top:24px"><a class="btn primary" href="/studio.html">进入写真工作台</a><a class="btn" href="/camera.html">🎬 3D 镜头</a><a class="btn" href="/showcase.html">看全部成果</a></div>
+        </section>
+      </article>
+    </div>
+  </main>
+  <footer id="foot"></footer>
+  <script src="/common.js"></script>
+  <script>renderChrome('method');</script>
+</body>
+</html>

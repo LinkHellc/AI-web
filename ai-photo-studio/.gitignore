@@ -1,0 +1,6 @@
+data/
+node_modules/
+
+
+# .env 是脱敏模板（Key 留空），需要提交；本机真实密钥请放 .env.local
+.env.local

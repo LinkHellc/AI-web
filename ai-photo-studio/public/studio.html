@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>写真工作台</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <img class="logo" src="/favicon.svg" alt="" aria-hidden="true">
+      <div><strong>AI 写真工作台</strong><small>模特资产 · 动作模板 · 批量出图</small></div>
+    </a>
+    <nav class="topnav" aria-label="站内导航">
+      <a href="/">首页</a><a href="/studio.html" class="on">写真工作台</a><a href="/camera.html">3D 镜头</a><a href="/showcase.html">成果</a><a href="/method.html">方法</a><a href="/usage.html">用量</a>
+    </nav>
+    <div class="top-right">
+      <span id="engine" class="pill">加载中…</span>
+      <button class="icon-btn" data-theme-toggle title="切换深浅色" aria-label="切换深浅色">🌓</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 左：控制面板 -->
+    <aside class="panel" id="panel">
+      <section class="block">
+        <h3><b>01</b> 模特 <em>Identity</em></h3>
+        <div id="personList" class="person-list"></div>
+        <p class="hint" id="personHint">上传 1–4 张同一人的清晰照片（正脸为主），保存为模特后可反复使用。</p>
+        <div class="sample-btns" id="samplePersonBtns" hidden></div>
+      </section>
+
+      <section class="block">
+        <h3><b>02</b> 服装 <em>Outfit</em><span class="opt">可选</span></h3>
+        <div class="slots" id="garmentSlots"></div>
+        <div class="samples" id="garmentSamples" hidden><span>示例单品</span><div></div></div>
+        <p class="hint">上传上衣、裤裙、鞋包等单品图，AI 会给模特换上。不传则保留原服装。</p>
+      </section>
+
+      <section class="block">
+        <h3><b>03</b> 拍摄模式 <em>Mode</em></h3>
+        <div class="modes" id="modeList"></div>
+        <div id="refBox" class="ref-box" hidden>
+          <label class="slot big" id="refSlot"><input type="file" accept="image/*" hidden><span class="plus">+</span><span>上传要复刻的参考图</span></label>
+          <p class="hint">AI 会照着参考图的姿势、构图和光线，换成你的模特。</p>
+          <div class="samples" id="refSamples" hidden><span>示例参考图</span><div></div></div>
+        </div>
+      </section>
+
+      <section class="block">
+        <h3><b>04</b> 动作库 <em>Action</em>
+          <label class="switch"><input type="checkbox" id="batchToggle"><span></span>批量模式</label>
+        </h3>
+        <div class="action-tools">
+          <input id="actionSearch" type="search" placeholder="⌕ 搜索动作，如 回眸、咖啡">
+          <button id="actionClear" class="link-btn" type="button">清空</button>
+        </div>
+        <div class="cats" id="actionCats"></div>
+        <div class="actions" id="actionList"></div>
+        <p class="hint" id="actionHint"></p>
+      </section>
+
+      <section class="block">
+        <h3><b>05</b> 场景风格 <em>Style</em></h3>
+        <div class="styles" id="styleList"></div>
+      </section>
+
+      <section class="block">
+        <h3><b>06</b> 镜头 <em>Camera</em>
+          <label class="switch"><input type="checkbox" id="camToggle"><span></span>手动控制</label>
+        </h3>
+        <div id="camBox" class="cam-box" hidden>
+          <div class="cam-viz">
+            <svg id="camTop" viewBox="-60 -60 120 120" aria-label="俯视图：镜头水平方位"></svg>
+            <svg id="camSide" viewBox="-10 -60 130 120" aria-label="侧视图：镜头俯仰与距离"></svg>
+          </div>
+          <label class="slider">水平方位 <output id="azOut">0°</output><input id="az" type="range" min="-180" max="180" step="5" value="0"></label>
+          <label class="slider">俯仰角 <output id="elOut">10°</output><input id="el" type="range" min="-30" max="75" step="5" value="10"></label>
+          <label class="slider">镜头距离 <output id="dOut">3.0m</output><input id="dist" type="range" min="0.6" max="7" step="0.1" value="3"></label>
+          <div class="cam-presets" id="camPresets"></div>
+          <p class="hint" id="camDesc"></p>
+        </div>
+      </section>
+
+      <section class="block">
+        <h3><b>07</b> 渲染配置 <em>Render</em></h3>
+        <div class="row-label">与模特照保持一致</div>
+        <div class="chips" id="lockList"></div>
+        <div class="row-label">画质</div>
+        <div class="seg" id="qualitySeg"></div>
+        <div class="row-label">比例 · 分辨率</div>
+        <div class="seg-row"><div class="seg" id="ratioSeg"></div><div class="seg" id="resSeg"></div></div>
+        <div class="row-label">每个动作出图 <output id="countOut">1</output> 张</div>
+        <input id="count" type="range" min="1" max="4" value="1">
+        <div class="row-label">补充描述 <span class="opt">可选</span></div>
+        <textarea id="extra" rows="2" maxlength="300" placeholder="例如：头发扎成低马尾，背景加一些气球"></textarea>
+      </section>
+
+      <div class="go-bar">
+        <button id="goBtn" class="go" type="button">⚡ 立即生成</button>
+        <p id="goHint" class="hint center"></p>
+      </div>
+    </aside>
+
+    <!-- 右：工作台 -->
+    <section class="work">
+      <div class="work-head">
+        <div>
+          <div class="eyebrow">Portrait Studio / 创作</div>
+          <h2>创作工作台</h2>
+          <div class="summary" id="summary"></div>
+        </div>
+        <nav class="tabs" role="tablist">
+          <button role="tab" data-tab="create" class="on">创作</button>
+          <button role="tab" data-tab="gallery">画廊</button>
+          <button role="tab" data-tab="persons">模特</button>
+        </nav>
+      </div>
+
+      <div class="tab" id="tab-create">
+        <div id="empty" class="empty">
+          <div class="spark">✦</div>
+          <h3>选择模特和动作，开始生成</h3>
+          <p>新建模特 → 挑一个拍摄模式 → 选动作（可批量）→ 立即生成。<br>结果会出现在这里，方便连续尝试不同风格。</p>
+        </div>
+        <div id="batches"></div>
+      </div>
+
+      <div class="tab" id="tab-gallery" hidden>
+        <div class="gallery-tools"><select id="galleryFilter"><option value="">全部模特</option></select><span id="galleryCount" class="hint"></span></div>
+        <div class="grid" id="gallery"></div>
+      </div>
+
+      <div class="tab" id="tab-persons" hidden>
+        <div class="grid persons-grid" id="personsGrid"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 新建模特 -->
+  <dialog id="personDlg">
+    <form method="dialog" id="personForm">
+      <h3>新建模特</h3>
+      <div class="field-row"><label class="field">名字<input name="name" maxlength="20" placeholder="例如：小雨 / 阿杰"></label><label class="field">性别<select name="gender"><option value="">不指定</option><option value="female">女</option><option value="male">男</option></select></label></div>
+      <div class="slots" id="personSlots"></div>
+      <p class="hint">建议 1 张清晰正脸 + 1–2 张半身/全身。同一个人，光线自然，不要美颜过度。</p>
+      <div class="dlg-actions">
+        <button value="cancel" class="ghost">取消</button>
+        <button value="ok" id="personSave" class="go small">保存模特</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 大图 -->
+  <dialog id="viewer" class="viewer">
+    <div class="viewer-body">
+      <img id="viewerImg" alt="生成结果">
+      <aside id="viewerInfo"></aside>
+    </div>
+    <button class="icon-btn close" id="viewerClose" aria-label="关闭">✕</button>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="/task.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

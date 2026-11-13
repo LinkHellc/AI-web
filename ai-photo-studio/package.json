@@ -1,0 +1,15 @@
+{
+  "name": "ai-photo-studio",
+  "version": "1.0.0",
+  "description": "AI 写真工作台：模特资产 + 服装 + 拍摄模式 + 动作库批量出图，用 GPT-Image 生成",
+  "private": true,
+  "main": "server.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "check": "node scripts/check-api.js"
+  }
+}

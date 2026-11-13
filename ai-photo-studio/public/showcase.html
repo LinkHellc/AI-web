@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>全部成果</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <header id="nav"></header>
+  <main id="main">
+    <section class="hero" style="padding-bottom:48px">
+      <div class="wrap" style="grid-template-columns:1fr">
+        <div>
+          <div class="eyebrow">Complete Archive</div>
+          <h1 class="h1">换了世界，<br>还是同一个人。</h1>
+          <p class="lead">这里是你在本机生成的全部作品，按模特和拍摄模式归档。点开任意一张看大图。</p>
+          <div class="kpis" id="kpis"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="works-sec">
+      <div class="wrap">
+        <div class="eyebrow">01 / Works</div>
+        <h2 class="h2" id="worksTitle">全部作品</h2>
+        <div class="row" style="justify-content:space-between;margin-bottom:20px">
+          <div class="chips" id="modeChips"></div>
+          <select id="personSel" class="chip" style="padding:6px 12px"><option value="">全部模特</option></select>
+        </div>
+        <div class="works" id="grid"></div>
+        <div class="row" style="justify-content:center;margin-top:24px"><button class="btn" id="more" hidden>加载更多</button></div>
+      </div>
+    </section>
+
+    <section class="section" id="model">
+      <div class="wrap">
+        <div class="eyebrow">02 / Identity Profiles</div>
+        <h2 class="h2">模特档案</h2>
+        <p class="lead">每位模特都是一组身份参考照。作品越多，越能看出她在不同场景里是否还是她自己。</p>
+        <div class="grid-4" id="persons"></div>
+      </div>
+    </section>
+
+    <section class="section" id="method">
+      <div class="wrap">
+        <div class="eyebrow">03 / Identity Pipeline</div>
+        <h2 class="h2">身份，是一层一层保住的。</h2>
+        <div class="grid-4">
+          <div class="card"><div class="num">01</div><h3 class="h3">身份照打底</h3><p>每次生成都带上模特的 1–4 张照片，放在输入的最前面。</p></div>
+          <div class="card"><div class="num">02</div><h3 class="h3">锁定脸与体型</h3><p>默认锁定脸部和体型，只放开服装、场景和动作。</p></div>
+          <div class="card"><div class="num">03</div><h3 class="h3">单品逐件还原</h3><p>服装图按编号说明作用，颜色、面料、图案和五金逐件对应。</p></div>
+          <div class="card"><div class="num">04</div><h3 class="h3">镜头与质感</h3><p>机位、景别和光线最后叠加，保留真实皮肤质感，不过度美颜。</p></div>
+        </div>
+        <div class="row" style="margin-top:28px"><a class="btn primary" href="/method.html">阅读完整拍摄方法 →</a><a class="btn" href="/studio.html">进入写真工作台</a></div>
+      </div>
+    </section>
+  </main>
+  <footer id="foot"></footer>
+  <script src="/common.js"></script>
+  <script>
+  'use strict';
+  renderChrome('showcase');
+  let all = [], persons = [], mode = '', person = '', shown = 24;
+  function filtered() { return all.filter((r) => (!mode || r.options.mode === mode) && (!person || r.personId === person)); }
+  function render() {
+    const list = filtered();
+    $('#worksTitle').textContent = `${list.length} 件，全部在这里。`;
+    const grid = $('#grid');
+    if (!list.length) { grid.replaceChildren(h('div', { class: 'empty', style: 'grid-column:1/-1' }, all.length ? '这个筛选下没有作品' : '还没有作品，去写真工作台生成第一组吧。')); $('#more').hidden = true; return; }
+    grid.replaceChildren(...list.slice(0, shown).map((r) => h('figure', { class: 'work' },
+      h('img', { src: r.urls.output, alt: '', loading: 'lazy', style: 'cursor:zoom-in', onclick: () => lightbox(r.urls.output, [r.personName, r.options.modeName, r.options.actionName, r.options.styleName, fmtDate(r.createdAt)].filter(Boolean).join(' · ')) }),
+      h('figcaption', {}, h('small', {}, `${r.options.modeName}${r.mock ? ' · 模拟' : ''}`), r.options.actionName || r.options.subjectName || r.options.styleName))));
+    $('#more').hidden = list.length <= shown;
+  }
+  $('#more').onclick = () => { shown += 24; render(); };
+  $('#personSel').onchange = (e) => { person = e.target.value; shown = 24; render(); };
+  (async () => {
+    [all, persons] = await Promise.all([api('/api/history').catch(() => []), api('/api/persons').catch(() => [])]);
+    const real = all.filter((r) => !r.mock);
+    const avg = real.length ? real.reduce((s, r) => s + r.durationMs, 0) / real.length / 1000 : 0;
+    const week = all.filter((r) => Date.now() - new Date(r.createdAt) < 7 * 864e5).length;
+    $('#kpis').replaceChildren(
+      ...[['总作品', all.length, 'TOTAL WORKS'], ['模特档案', persons.length, 'IDENTITIES'], ['近 7 天', week, 'THIS WEEK'], ['平均耗时', avg ? avg.toFixed(0) + ' 秒' : '—', 'AVG TIME']]
+        .map(([n, v, en]) => h('div', {}, h('small', {}, en), h('b', {}, String(v)), h('span', {}, n))));
+    const modes = [...new Map(all.map((r) => [r.options.mode, r.options.modeName])).entries()];
+    const drawChips = () => $('#modeChips').replaceChildren(h('button', { class: 'chip' + (mode ? '' : ' on'), onclick: () => { mode = ''; drawChips(); render(); } }, `全部 ${all.length}`),
+      ...modes.map(([id, name]) => h('button', { class: 'chip' + (mode === id ? ' on' : ''), onclick: () => { mode = id; shown = 24; drawChips(); render(); } }, `${name} ${all.filter((r) => r.options.mode === id).length}`)));
+    drawChips();
+    $('#personSel').append(...persons.map((p) => h('option', { value: p.id }, p.name)));
+    render();
+    $('#persons').replaceChildren(...(persons.length ? persons.map((p) => h('div', { class: 'card', style: 'padding:14px' },
+      h('div', { style: 'display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin-bottom:12px' }, ...p.photos.slice(0, 4).map((u) => h('img', { src: u, alt: p.name, style: 'aspect-ratio:3/4;object-fit:cover;border-radius:8px' }))),
+      h('div', { class: 'row', style: 'justify-content:space-between' }, h('b', {}, p.name), h('span', { class: 'muted', style: 'font-size:13px' }, `${p.uses} 件作品`)),
+      h('div', { class: 'row', style: 'margin-top:10px' }, h('button', { class: 'btn sm', onclick: () => { person = p.id; $('#personSel').value = p.id; render(); $('#works-sec').scrollIntoView(); } }, '看作品'), h('a', { class: 'btn sm', href: '/studio.html' }, '去拍')))) : [h('div', { class: 'empty', style: 'grid-column:1/-1' }, '还没有模特，去写真工作台新建一个。')]));
+  })();
+  </script>
+</body>
+</html>

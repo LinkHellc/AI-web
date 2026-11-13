@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>3D 镜头工作台</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="/theme.js"></script>
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/site.css">
+  <style>
+    .cam-app { display: grid; grid-template-columns: 360px 1fr; gap: 16px; padding: 16px clamp(16px, 3vw, 32px) 32px; max-width: 1560px; margin: 0 auto; }
+    .side { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow: auto; }
+    .blk { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+    .blk h3 { margin: 0 0 10px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .blk h3 em { font: 500 10px/1 var(--mono); letter-spacing: .16em; color: var(--accent); font-style: normal; text-transform: uppercase; }
+    .drop { position: relative; display: grid; place-items: center; height: 180px; border: 1.5px dashed var(--line); border-radius: 12px; background: var(--panel-2); color: var(--muted); font-size: 13px; cursor: pointer; overflow: hidden; text-align: center; }
+    .drop.drag, .drop:hover { border-color: var(--accent); color: var(--accent); }
+    .drop img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--soft); }
+    .drop .rm { position: absolute; top: 6px; right: 6px; z-index: 2; border: 0; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; }
+    .mini { display: flex; gap: 6px; overflow-x: auto; margin-top: 8px; }
+    .mini img { width: 44px; height: 58px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); cursor: pointer; flex: 0 0 auto; }
+    .mini img:hover { border-color: var(--accent); }
+    .modes3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .modes3 button { border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 8px 4px; font-size: 13px; }
+    .modes3 button.on { border-color: var(--accent); color: var(--accent); background: var(--sel); font-weight: 600; }
+    .orbit { width: 100%; aspect-ratio: 1.3; background: radial-gradient(circle at 50% 55%, var(--panel-2), var(--bg)); border: 1px solid var(--line); border-radius: 12px; touch-action: none; cursor: grab; display: block; }
+    .orbit:active { cursor: grabbing; }
+    .readout { font: 500 11px/1 var(--mono); letter-spacing: .08em; color: var(--muted); text-align: center; margin: 8px 0 2px; }
+    .slider { display: grid; grid-template-columns: 1fr auto; font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .slider input { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); }
+    .slider output { color: var(--ink); font-variant-numeric: tabular-nums; }
+    .seg { display: inline-flex; background: var(--soft); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+    .seg button { border: 0; background: none; padding: 5px 11px; border-radius: 8px; font-size: 13px; color: var(--muted); }
+    .seg button.on { background: var(--ink); color: var(--bg); font-weight: 600; }
+    .lbl { font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
+    .lbl:first-child { margin-top: 0; }
+    .side textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--panel-2); resize: vertical; }
+    .gobar { position: sticky; bottom: 0; background: var(--panel); padding: 14px 18px; border-top: 1px solid var(--line); margin-top: auto; }
+    .gobar .btn { width: 100%; padding: 13px; font-size: 15px; border-radius: 12px; }
+    .gobar p { margin: 8px 0 0; text-align: center; font-size: 12px; color: var(--muted); }
+
+    .canvas { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); min-height: 70vh; display: flex; flex-direction: column; overflow: hidden; }
+    .ctool { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+    .ctool button { border: 1px solid var(--line); background: transparent; border-radius: 8px; width: 30px; height: 30px; }
+    .ctool .sp { margin-left: auto; }
+    .board { flex: 1; overflow: auto; padding: 24px; background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 22px 22px; }
+    .nodes { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; transform-origin: 0 0; }
+    .node { width: 220px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; }
+    .node.sel { outline: 2px solid var(--accent); }
+    .node .img { aspect-ratio: 2/3; background: var(--soft); display: grid; place-items: center; color: var(--muted); font-size: 12px; text-align: center; }
+    .node img { width: 100%; height: 100%; object-fit: cover; }
+    .node .meta { padding: 8px 10px; font: 500 11px/1.5 var(--mono); color: var(--muted); }
+    .node .meta b { color: var(--ink); font: 600 13px/1.4 inherit; display: block; font-family: inherit; }
+    .node.src .meta b::before { content: "源图 · "; color: var(--accent); }
+    .node .err { color: var(--danger); padding: 10px; }
+    .spinner { width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: spin 1s linear infinite; margin: 0 auto 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hintbox { margin: auto; text-align: center; color: var(--muted); padding: 60px 20px; }
+    .hintbox b { display: block; font: 600 22px/1.4 var(--serif); color: var(--ink); margin-bottom: 6px; }
+    .detail { border-top: 1px solid var(--line); padding: 14px 18px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+    .detail dl { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; font-size: 13px; }
+    .detail dt { color: var(--muted); }
+    .detail dd { margin: 0 0 0 -12px; }
+    @media (max-width: 960px) {
+      .cam-app { grid-template-columns: 1fr; }
+      .side { position: static; max-height: none; }
+      .node { width: calc(50% - 9px); }
+      .detail { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header id="nav"></header>
+  <main id="main" class="cam-app">
+    <aside class="side">
+      <div class="blk">
+        <h3>输入图像 <em>Source</em></h3>
+        <label class="drop" id="drop"><input type="file" accept="image/*" hidden><span>点击、拖拽或 Ctrl+V 粘贴一张照片</span></label>
+        <div class="lbl" id="pickLbl" hidden>或从作品 / 示例中选</div>
+        <div class="mini" id="picks"></div>
+      </div>
+      <div class="blk">
+        <h3>控制模式 <em>Control</em></h3>
+        <div class="modes3" id="ctrlModes">
+          <button data-m="free" class="on">🎯 自由视角</button>
+          <button data-m="orbit">🔄 环绕</button>
+          <button data-m="preset">📐 预设</button>
+        </div>
+      </div>
+      <div class="blk">
+        <h3>镜头参数 <em>Lens</em></h3>
+        <canvas class="orbit" id="orbit" width="520" height="400" aria-label="拖动调整镜头方位和俯仰，滚轮调整距离"></canvas>
+        <div class="readout" id="readout"></div>
+        <div id="freeBox">
+          <label class="slider">Azimuth 水平方位角 <output id="azO"></output><input id="az" type="range" min="-180" max="180" step="5"></label>
+          <label class="slider">Elevation 俯仰角 <output id="elO"></output><input id="el" type="range" min="-30" max="75" step="5"></label>
+          <label class="slider">Distance 镜头距离 <output id="dO"></output><input id="d" type="range" min="0.6" max="7" step="0.1"></label>
+        </div>
+        <div id="orbitBox" hidden>
+          <div class="lbl">环绕一圈拍几张</div>
+          <div class="seg" id="orbitN"></div>
+          <p class="muted" style="font-size:12px;margin:8px 0 0">从当前方位开始，按相同俯仰和距离等分 360°。</p>
+        </div>
+        <div id="presetBox" hidden>
+          <div class="lbl">机位预设（可多选，一次出多张）</div>
+          <div class="chips" id="presets"></div>
+        </div>
+      </div>
+      <div class="blk">
+        <h3>拍摄主体 <em>Subject</em></h3>
+        <div class="chips" id="subjects"></div>
+      </div>
+      <div class="blk">
+        <h3>生成设置 <em>Render</em></h3>
+        <div class="lbl">分辨率</div><div class="seg" id="res"></div>
+        <div class="lbl">比例</div><div class="seg" id="ratio"></div>
+        <div class="lbl">画质</div><div class="seg" id="quality"></div>
+        <div class="lbl">补充指令 <span class="muted">可选</span></div>
+        <textarea id="extra" rows="2" maxlength="300" placeholder="例如：保持手里的包在画面里"></textarea>
+      </div>
+      <div class="gobar"><button class="btn gold" id="go">⚡ 生成</button><p id="goHint"></p></div>
+    </aside>
+
+    <section class="canvas">
+      <div class="ctool">
+        <span>预览画布</span>
+        <span class="sp"></span>
+        <button id="zoomOut" aria-label="缩小">−</button><span id="zoomV">100%</span><button id="zoomIn" aria-label="放大">+</button><button id="zoomFit" aria-label="适应">⊡</button>
+      </div>
+      <div class="board" id="board">
+        <div class="hintbox" id="boardHint"><b>上传图片 → 调机位 → 生成</b>拖动左侧球体改变机位，结果会作为新节点出现在这里。<br>点节点可以下载、设为新的源图或删除。</div>
+        <div class="nodes" id="nodes"></div>
+      </div>
+      <div class="detail" id="detail" hidden></div>
+    </section>
+  </main>
+  <script src="/common.js"></script>
+  <script src="/task.js"></script>
+  <script src="/camera.js"></script>
+</body>
+</html>

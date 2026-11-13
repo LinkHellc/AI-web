@@ -1,0 +1,17 @@
+{
+  "name": "nail-tryon-studio",
+  "version": "1.0.0",
+  "description": "美甲试甲工作台：上传手部照片和款式图，用 GPT-Image 生成上手效果",
+  "private": true,
+  "main": "server.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "check": "node scripts/check-api.js",
+    "try-edit": "node scripts/try-edit.js",
+    "gen-presets": "node scripts/gen-presets.js"
+  }
+}
